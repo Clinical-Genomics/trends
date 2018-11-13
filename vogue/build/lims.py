@@ -26,10 +26,10 @@ def build_sample(sample: Sample, lims: Lims)-> dict:
     mongo_sample['library_size_pre_hyb'] = get_library_size_pre_hyb(application_tag, sample.id, lims)
     mongo_sample['library_size_post_hyb'] = get_library_size_post_hyb(application_tag, sample.id, lims)
 
-    sequenced_at = get_sequenced_date(sample, lims)
-    received_at = get_received_date(sample, lims)
-    prepared_at = get_prepared_date(sample, lims)
-    delivered_at = get_delivery_date(sample, lims)
+    sequenced_at = get_process_date(sample, lims, 'sequenced')
+    received_at = get_process_date(sample, lims,'received')
+    prepared_at = get_process_date(sample, lims, 'prepared')
+    delivered_at = get_process_date(sample, lims, 'delivered')
 
     mongo_sample['sequenced_date'] = sequenced_at
     mongo_sample['received_date'] = received_at

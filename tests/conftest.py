@@ -5,7 +5,7 @@ from mongomock import MongoClient
 from genologics.entities import Sample
 from genologics.config import BASEURI,USERNAME,PASSWORD
 from genologics.lims import Lims
-LIMS = Lims(BASEURI,USERNAME,PASSWORD)
+
 
 #from vogue.load.lims import build_sample
 

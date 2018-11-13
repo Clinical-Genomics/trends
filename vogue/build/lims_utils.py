@@ -12,86 +12,103 @@ def str_to_datetime(date: str)-> dt:
         return None
     return dt.strptime(date, '%Y-%m-%d')
 
+PROCESS = {
+    'sequenced': {
+        'process_types': [
+                     'CG002 - Illumina Sequencing (HiSeq X)', 
+                     'CG002 - Illumina Sequencing (Illumina SBS)'
+                 ],
+        'udf': None,
+        'sample_udf': 'Passed Sequencing QC',
+        'operator': max
+    },
+    'received': {
+        'process_types': [
+            'CG002 - Reception Control'
+        ],
+        'udf': 'date arrived at clinical genomics',
+        'parent_process': True,
+    },
+    'prepared': {
+        'process_types': [
+                     'CG002 - Aggregate QC (Library Validation)'
+                 ],
+        'udf': None,
+        'operator': max,
+    },
+    'delivery': {
+        'process_types': [
+                     'CG002 - Delivery'
+                 ],
+        'udf': 'Date delivered',
+        'parent_process': True,
+        'operator': min,
+        'warn_if_many': True,
+    }
+    
+}
 
-def get_sequenced_date(sample: Sample, lims: Lims)-> dt:
-    """Get the date when a sample passed sequencing."""
+def get_process_date(sample: Sample, lims: Lims, process: str)-> dt:
+    """Get dates for a certain kind of process
+    
+    Args:
+        sample(Sample): A Lims Sample object
+        lims(Lims): A connection to the Lims database
+        process(str): What type of process should be checked
+    
+    Returns:
+        date(datetime.datetime): The relevant date or None
+    """
+    try:
+        process_info = PROCESS[process]
+    except KeyError as err:
+        LOG.error("Process %s does not exist", process)
+        raise SyntaxError(err.message)
 
-    process_types = ['CG002 - Illumina Sequencing (HiSeq X)', 
-                     'CG002 - Illumina Sequencing (Illumina SBS)']  
-    udf = 'Passed Sequencing QC'
-
-    sample_udfs = sample.udf.get(udf)
-    if not sample_udfs:
-        return None
-
+    # Each process will have one or more process types
+    # These are used to search the correct artifacts
+    process_types = process_info['process_types']
+    # Some process have a udf
+    udf = process_info['udf']
+    # Some process require that we look at the parent process of the artifacts
+    parent_process = process_info.get('parent_process')
+    # If there are multiple dates we need to know which one to return
+    operator = process_info.get('operator', min)
+    
+    # If we need to check sample udfs
+    if process_info.get('sample_udf'):
+        sample_udfs = sample.udf.get(process_info['sample_udf'])
+        # If there where no sample udf of the relevant type we return None
+        if not sample_udfs:
+            return None
+    
+    # Get all artifacts for a sample and the relevant process type(s)
     artifacts = lims.get_artifacts(process_type = process_types, samplelimsid = sample.id)
-    if not artifacts:
-        return None
-
-    final_date = str_to_datetime(artifacts[0].parent_process.date_run)
+    
+    date = None
+    dates = []
     for art in artifacts:
-        art_date = str_to_datetime(art.parent_process.date_run)
-        if art_date > final_date:
-            final_date = art_date
+        if not art.parent_process:
+            continue
+        if parent_process:
+            # Check if there are relevant udfs for the parent
+            parent_udf = artifact.parent_process.udf.get(udf)
+            if not parent_udf:
+                continue
+            # Get the date of these
+            dates.append(str_to_datetime(parent_udf.isoformat()))
+            continue
 
-    return final_date
+        dates.append(str_to_datetime(art.parent_process.date_run))
     
+    if dates:
+        if (process_info.get('warn_if_many') and len(dates) > 1):
+            LOG.warning("Multiple % days found for: %s.", process_type, sample.id)
+            
 
-def get_received_date(sample: Sample, lims: Lims)-> dt:
-    """Get the date when a sample was received."""
-
-    process_type = 'CG002 - Reception Control'
-    udf = 'date arrived at clinical genomics'
-    artifacts = lims.get_artifacts(process_type = process_type, samplelimsid = sample.id)
-    received_date = None
-
-    for artifact in artifacts:   
-        if artifact.parent_process and artifact.parent_process.udf.get(udf):
-            date_string = artifact.parent_process.udf.get(udf).isoformat()
-            received_date = str_to_datetime(date_string)
-
-    return received_date 
-
-
-def get_prepared_date(sample: Sample, lims: Lims)-> dt:
-    """Get the last date when a sample was prepared in the lab."""
-
-    process_type = 'CG002 - Aggregate QC (Library Validation)'
-    artifacts = lims.get_artifacts(process_type=process_type, 
-                                    samplelimsid = sample.id)
+        date = operator(dates)
     
-    prepared_dates = [art.parent_process.date_run for art in artifacts]
-    prepared_date = None
-
-    if prepared_dates:
-        prepared_date = str_to_datetime(min(prepared_dates))
-
-    return prepared_date
-
-
-def get_delivery_date(sample: Sample, lims: Lims)-> dt:
-    """Get delivery date for a sample."""
-
-    process_type = 'CG002 - Delivery'
-    artifacts = lims.get_artifacts(samplelimsid = sample.id, process_type = process_type,
-                                   type = 'Analyte')
-    delivery_date = None
-
-    # if for some strange reason there would be more than one:
-    delivery_dates = [] 
-    for art in artifacts:
-        art_date = art.parent_process.udf.get('Date delivered')
-        if art_date:
-            delivery_dates.append(str_to_datetime(art_date.isoformat()))
-    
-    if len(delivery_dates) > 1:
-        LOG.warning("Multiple delivery days found for: %s.", sample.id)
-
-    if delivery_dates:
-        delivery_date = min(delivery_dates)
-
-    return delivery_date
-
+    return date
 
 def get_number_of_days(first_date: dt, second_date : dt) -> int:
     """Get number of days between different time stamps."""

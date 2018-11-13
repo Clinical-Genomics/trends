@@ -1,5 +1,5 @@
 from datetime import datetime as dt
-from vogue.build.lims_utils import get_sequenced_date, get_number_of_days
+from vogue.build.lims_utils import get_process_date, get_number_of_days
 
 
 def test_get_sequenced_date_no_udfs(lims_sample, lims):
@@ -10,7 +10,7 @@ def test_get_sequenced_date_no_udfs(lims_sample, lims):
 
     ##WHEN getting the sequence date
 
-    sequenced_date = get_sequenced_date(lims_sample, lims)
+    sequenced_date = get_process_date(lims_sample, lims, 'sequenced')
 
     ##THEN assert sequenced_date is none
 
@@ -27,7 +27,7 @@ def test_get_sequenced_date_no_artifacts(lims_sample, lims):
 
     ##WHEN getting the sequence date
 
-    sequenced_date = get_sequenced_date(lims_sample, lims)
+    sequenced_date = get_process_date(lims_sample, lims, 'sequenced')
 
     ##THEN assert sequenced_date is none
 
@@ -44,7 +44,7 @@ def test_get_sequenced_date_one_artifact(lims_sample, lims, simple_artifact):
     lims._add_artifact(simple_artifact)
     ##WHEN getting the sequence date
 
-    sequenced_date = get_sequenced_date(lims_sample, lims)
+    sequenced_date = get_process_date(lims_sample, lims, 'sequenced')
 
     ##THEN assert sequenced_date is none
 
