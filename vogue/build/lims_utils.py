@@ -12,37 +12,50 @@ def str_to_datetime(date: str)-> dt:
         return None
     return dt.strptime(date, '%Y-%m-%d')
 
+
+# This dictionary describes what entities we are interested of for different process types
+# Each process have a list of process types. These are used when searching the lims for artifacts
+# Each process can have a 'udf', a user defined field
+# For some processes we would like to get the first date of all possible dates
+# For others we wan't the last date, we use the operator to fix this
+# If udfs should be checked in parent process we set 'parent_process'=True
 PROCESS = {
     'sequenced': {
+        'description': "Get the last date when a sample was sequenced",
         'process_types': [
                      'CG002 - Illumina Sequencing (HiSeq X)', 
                      'CG002 - Illumina Sequencing (Illumina SBS)'
                  ],
-        'udf': None,
+        # This udf indicates that sequencing was ready
         'sample_udf': 'Passed Sequencing QC',
+        # We want the last of all finished sequencing dates
         'operator': max
     },
     'received': {
+        'description': "Get the first date when a sample was received",
         'process_types': [
             'CG002 - Reception Control'
         ],
+        # Check all parent process of the artifacts for this udf
         'udf': 'date arrived at clinical genomics',
         'parent_process': True,
+        'warn_if_many': True,
     },
     'prepared': {
+        'description': "Get the last date when a sample was prepared",
         'process_types': [
                      'CG002 - Aggregate QC (Library Validation)'
                  ],
-        'udf': None,
         'operator': max,
     },
     'delivery': {
+        'description': "Get the last date when a sample was deliverred",
         'process_types': [
                      'CG002 - Delivery'
                  ],
         'udf': 'Date delivered',
         'parent_process': True,
-        'operator': min,
+        'operator': max,
         'warn_if_many': True,
     }
     
@@ -69,7 +82,7 @@ def get_process_date(sample: Sample, lims: Lims, process: str)-> dt:
     # These are used to search the correct artifacts
     process_types = process_info['process_types']
     # Some process have a udf
-    udf = process_info['udf']
+    udf = process_info.get('udf')
     # Some process require that we look at the parent process of the artifacts
     parent_process = process_info.get('parent_process')
     # If there are multiple dates we need to know which one to return
@@ -103,8 +116,7 @@ def get_process_date(sample: Sample, lims: Lims, process: str)-> dt:
     
     if dates:
         if (process_info.get('warn_if_many') and len(dates) > 1):
-            LOG.warning("Multiple % days found for: %s.", process_type, sample.id)
-            
+            LOG.warning("Multiple %s days found for: %s.", process_type, sample.id)
 
         date = operator(dates)
     
