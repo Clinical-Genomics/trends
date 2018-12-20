@@ -5,6 +5,8 @@ from .app import create_app
 
 app = create_app()
 
+from . import views
+
 def main():
     app.debug = True
     #toolbar = DebugToolbarExtension(app)
