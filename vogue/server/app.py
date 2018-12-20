@@ -1,16 +1,22 @@
 # encoding: utf-8
-import os
-from views import app
-from flask_debugtoolbar import DebugToolbarExtension
+import coloredlogs
+from flask import Flask
+from . import extentions
+
+def create_app():
+    """Generate a flask application."""
+    app = Flask(__name__, template_folder='templates')
+
+    # load config
+    app.config.from_object(__name__.replace('app', 'config'))
+
+    configure_extensions(app)
+
+    return app
 
 
+def configure_extensions(app: Flask):
+    """Configure extensions and logging"""
+    coloredlogs.install(level='DEBUG' if app.debug else 'INFO')
 
-def main():
-    app.debug = True
-    #toolbar = DebugToolbarExtension(app)
-    app.run(host='0.0.0.0', port=8000)
-
-if __name__ == "__main__":
-    main()
-
-
+    extentions.adapter.init_app(app)

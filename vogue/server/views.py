@@ -4,7 +4,8 @@ from flask_login import login_user,logout_user, current_user, login_required
 from flask_oauthlib.client import OAuthException
 
 
-from extentions import app, adapter
+from extentions import adapter
+from auto import app
 from vogue.server.utils import (find_recived_per_month, turn_around_times, 
                                 find_concentration_defrosts, find_concentration_time,
                                 find_concentration_amount)
