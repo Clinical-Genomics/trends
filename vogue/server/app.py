@@ -4,7 +4,7 @@ import coloredlogs
 from flask_debugtoolbar import DebugToolbarExtension
 from flask import Flask
 
-from . import extentions
+from vogue.server import extentions
 
 def create_app():
     """Generate a flask application."""
@@ -33,4 +33,4 @@ if __name__ == "__main__":
 
 app = create_app()
 
-from . import views
+from vogue.server import views

@@ -3,8 +3,8 @@ from flask_login import login_user,logout_user, current_user, login_required
 #from flask.ext.mail import Message
 from flask_oauthlib.client import OAuthException
 
-from .extentions import adapter
-from .app import app
+from vogue.server.extentions import adapter
+from vogue.server.app import app
 from vogue.server.utils import (find_recived_per_month, turn_around_times, 
                                 find_concentration_defrosts, find_concentration_time,
                                 find_concentration_amount)
