@@ -2,7 +2,7 @@ from genologics.entities import Sample
 from genologics.lims import Lims
 
 import logging
-from vogue.build.lims import build_sample
+from vogue.build.sample import build_sample
 LOG = logging.getLogger(__name__)
    
 

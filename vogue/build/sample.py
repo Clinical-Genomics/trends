@@ -1,7 +1,7 @@
 from genologics.entities import Sample
 from genologics.lims import Lims
 
-from vogue.build.lims_utils import *
+from vogue.parse.sample import *
 
 
 def build_sample(sample: Sample, lims: Lims)-> dict:

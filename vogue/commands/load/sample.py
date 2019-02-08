@@ -15,7 +15,7 @@ LOG = logging.getLogger(__name__)
 @click.option('-f', '--load-from', 
                 help = 'load from this sample lims id. Use if load all broke. Start where it ended')
 @click.pass_context
-def lims(context, sample_lims_id, dry, load_all, load_from):
+def sample(context, sample_lims_id, dry, load_all, load_from):
     """Read and load lims data for a given sample id"""
     adapter = context.obj['adapter']
     try:
