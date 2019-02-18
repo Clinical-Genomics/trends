@@ -1,4 +1,4 @@
-from vogue.build.lims import build_sample
+from vogue.build.sample import build_sample
 
 def test_build_sample(lims_sample, lims):
     ## GIVEN a lims sample
