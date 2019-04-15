@@ -4,11 +4,14 @@ python:
     - '3.6'
 
 install:
-  - pip install pytest
-  - pip install --editable .
+    - pip install pytest
+    - pip install --editable .
 
 script:
-  - py.test -v tests/*
+    - py.test -v tests/*
+
+after_success:
+    - coveralls --ignore-errors
 
 notifications:
-  email: false
+    email: false
