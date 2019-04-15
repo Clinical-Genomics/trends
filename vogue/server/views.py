@@ -1,7 +1,7 @@
 from flask import url_for, redirect, render_template, request, Blueprint, current_app
 
 from vogue.constants.constants import YEARS, THIS_YEAR
-from vogue.server.utils import ( find_concentration_defrosts, find_concentration_amount, value_per_month, plot_attributes, q30_instruments)
+from vogue.parse.server.utils import ( find_concentration_defrosts, find_concentration_amount, value_per_month, plot_attributes, q30_instruments)
 
 app = current_app
 blueprint = Blueprint('server', __name__)

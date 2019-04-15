@@ -12,7 +12,7 @@ from vogue.tools.cli_utils import concat_dict_keys
 from vogue.build.analysis import build_analysis
 from vogue.tools.cli_utils import add_doc as doc
 from vogue.load.analysis import load_analysis
-from vogue.parse.analysis import validate_conf
+from vogue.parse.build.analysis import validate_conf
 import vogue.models.analysis as analysis_model
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']

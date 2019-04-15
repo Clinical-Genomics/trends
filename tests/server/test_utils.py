@@ -1,6 +1,6 @@
 
 from vogue.server import create_app
-from vogue.server.utils import find_concentration_defrosts, find_concentration_amount, value_per_month, q30_instruments
+from vogue.parse.server.utils import find_concentration_defrosts, find_concentration_amount, value_per_month, q30_instruments
 from vogue.adapter.plugin import VougeAdapter
 from datetime import datetime
 
