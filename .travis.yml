@@ -9,7 +9,8 @@ install:
     - pip check
 
 script:
-    - py.test -v tests/*
+    - coverage run --source "$(basename "$PWD")" setup.py test
+    - git reset --soft ${TRAVIS_COMMIT_RANGE%...*} && git lint
 
 after_success:
     - coveralls
