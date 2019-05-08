@@ -38,6 +38,23 @@ class VougeAdapter(MongoAdapter):
         else:
             LOG.info("No updates for sample %s.", lims_id)
 
+    def add_or_update_sample_analysis_summary(self, sample_news: dict):
+        """Adds/updates a sample_analysis_summary in the database"""
+
+        lims_id = sample_news['_id']
+        update_result = self.db.sample_analysis_summary.update_one({'_id' : lims_id}, {'$set': sample_news}, upsert=True)
+
+        if not update_result.raw_result['updatedExisting']:
+            self.db.sample_analysis_summary.update_one({'_id' : lims_id}, 
+                {'$set': {'added': dt.today()}})
+            LOG.info("Added sample_analysis_summary for sample %s.", lims_id)
+        elif update_result.modified_count:
+            self.db.sample_analysis_summary.update_one({'_id' : lims_id}, 
+                {'$set': {'updated': dt.today()}})
+            LOG.info("Updated sample_analysis_summary for sample %s.", lims_id)
+        else:
+            LOG.info("No updates for sample %s.", lims_id)
+
     def add_or_update_run(self, run_news: dict):
         """Adds/updates a flowcell in the database"""
 
@@ -111,6 +128,10 @@ class VougeAdapter(MongoAdapter):
     def samples_aggregate(self, pipe : list):
         """Function to make a aggregation on the sample colleciton"""
         return self.sample_collection.aggregate(pipe)
+
+    def sample_analysis_aggregate(self, pipe : list):
+        """Function to make a aggregation on the sample_analysis colleciton"""
+        return self.sample_analysis_collection.aggregate(pipe)
 
     def flowcells_aggregate(self, pipe : list):
         """Function to make a aggregation on the flowcell colleciton"""
