@@ -14,13 +14,13 @@ from vogue.tools.cli_utils import add_doc as doc
 from vogue.tools.cli_utils import recursive_default_dict
 from vogue.tools.cli_utils import convert_defaultdict_to_regular_dict
 from vogue.build.case_analysis import build_analysis
+from vogue.build.case_analysis import build_analysis_sample
 from vogue.load.case_analysis import load_analysis
 from vogue.parse.load.case_analysis import validate_conf
 import vogue.models.case_analysis as analysis_model
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
-
 
 @click.command("analysis", short_help="Read files from analysis workflows")
 @click.option('--sample-list',
@@ -181,11 +181,7 @@ def analysis(dry, analysis_config, analysis_type, analysis_case,
 
         current_analysis = current_app.adapter.bioinfo_processed(analysis_case)
 
-        if load_sample:
-            LOG.info("Loading following samples to bioinfo_samples: %s",
-                     ", ".join(analysis_dict['sample']))
     else:
-
         # Don't process the case
         current_analysis = current_app.adapter.bioinfo_raw(analysis_case)
         processed = False
@@ -200,8 +196,10 @@ def analysis(dry, analysis_config, analysis_type, analysis_case,
                                     cleanup=cleanup)
 
     if ready_analysis:
-        LOG.info('Values for %s  loaded for sample %s',
-                 list(ready_analysis.keys()), sample_id)
+        LOG.info('Values for %s  loaded for case %s',
+                 list(ready_analysis.keys()), analysis_case)
+        LOG.info('Loaded samples in case are: %s', ", ".join(ready_analysis['samples']))
+
     else:
         LOG.warning('No enteries were found for the given analysis type: %s',
                     analysis_type)
@@ -210,5 +208,25 @@ def analysis(dry, analysis_config, analysis_type, analysis_case,
     load_analysis(adapter=current_app.adapter,
                   lims_id=sample_id,
                   processed=processed,
+                  is_sample=False,
                   dry_run=dry,
                   analysis=ready_analysis)
+
+    if processed and load_sample:
+        current_processed_analysis = current_app.adapter.bioinfo_processed(analysis_case)
+        LOG.info("Loading following samples to bioinfo_samples: %s",
+                 ", ".join(analysis_dict['sample']))
+        for sample in analysis_dict['sample']:
+            sample_analysis = build_analysis_sample(analysis_dict=current_processed_analysis,
+                    process_case=processed, sample_id=sample)
+            load_res = load_analysis(adapter=current_app.adapter,
+                          lims_id=sample_id,
+                          processed=processed,
+                          is_sample=True,
+                          dry_run=dry,
+                          analysis=sample_analysis)
+            if load_res:
+                LOG.info("Sample %s is loaded into database", sample)
+            else:
+                LOG.warning("Loading failed for sample %s", sample)
+            
