@@ -19,6 +19,11 @@ def validate_conf(analysis_dict: dict):
     # detect if multiqc analysis_dict is multiqc
     if case_analysis_type == "multiqc":
         analysis_dict = analysis_dict["multiqc"]["report_saved_raw_data"]
+    elif case_analysis_type == "microsalt":
+        analysis_dict = analysis_dict["microsalt"]
+    else:
+        LOG.warning("Analysis type %s is not supported for cleanup", case_analysis_type)
+        return None
 
     # Second level keys in ANALYSIS_SETS are bioinformatic tool name OR analysis name.
     # This line will extract all the second level keys.
