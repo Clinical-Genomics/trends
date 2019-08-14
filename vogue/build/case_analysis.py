@@ -18,11 +18,6 @@ def extract_valid_analysis(analysis_dict: dict, analysis_type: str,
     '''
 
     case_analysis_type =  analysis_dict['case_analysis_type']
-    samples = analysis_dict['sample']
-
-    # detect if multiqc analysis_dict is multiqc
-    if case_analysis_type == "multiqc":
-        analysis_dict = analysis_dict["multiqc"]["report_saved_raw_data"]
 
     # Match valid_analysis with the analysis_type of ANALYSIS_SETS
     analysis_common_keys = list()
@@ -40,8 +35,8 @@ def extract_valid_analysis(analysis_dict: dict, analysis_type: str,
         if case_analysis_type == "multiqc":
             analysis[common_key] = analysis_dict["multiqc"][
                 "report_saved_raw_data"][common_key]
-        else:
-            analysis[common_key] = analysis_dict[common_key]
+        elif case_analysis_type == "microsalt":
+            analysis[common_key] = analysis_dict["microsalt"][common_key]
 
     return analysis
 
@@ -91,7 +86,6 @@ def build_processed_case(analysis_dict: dict,
     ##                                               analysis_type=my_analysis,
     ##                                               valid_analysis=valid_analysis)
 
-    print(case_analysis.keys())
 
     return case_analysis
 
@@ -264,4 +258,37 @@ def build_analysis(analysis_dict: dict,
                                           new_analysis=analysis,
                                           processed=process_case)
 
+    return mongo_doc
+
+def build_analysis_sample(analysis_dict: dict,  sample_id: str,process_case=False):
+    '''
+    Builds sample analysis from analysis_dict
+
+    analysis_dict is a processed dictionary, i.e. from bioinfo_processed
+    '''
+
+    analysis_case = analysis_dict['_id']
+    analysis_workflows = analysis_dict['workflows']
+    case_analysis_types = analysis_dict['case_analysis_types']
+
+    if not process_case:
+        return None
+
+    mongo_doc = recursive_default_dict()
+    mongo_doc['_id'] = sample_id
+    mongo_doc['workflows'] = analysis_workflows
+    mongo_doc['case_analysis_typesi'] = case_analysis_types
+    for workflow in analysis_workflows:
+        for analysis_type in case_analysis_types:
+            simple_analysis_dict = analysis_dict[workflow][analysis_type]
+            # check if sample_id is in key
+            for metric, samples in simple_analysis_dict.items():
+                if isinstance(samples, dict):
+                    for sample in samples.keys():
+                        # split key by underscore
+                        if sample_id in sample.split("_"):
+                            mongo_doc[workflow][metric] = samples[sample]
+                            mongo_doc[workflow]['case'] = analysis_case
+
+    mongo_doc = convert_defaultdict_to_regular_dict(mongo_doc)
     return mongo_doc
