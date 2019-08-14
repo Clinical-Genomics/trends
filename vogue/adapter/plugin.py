@@ -198,6 +198,32 @@ class VougeAdapter(MongoAdapter):
                 upsert=True)
             LOG.info("Updated analysis for sample %s.", case_id)
 
+    def add_or_update_analysis_bioinfo_samples(self, analysis_result: dict):
+        """Functionality to add or update analysis for sample level results"""
+        print(analysis_result.keys())
+        lims_id = analysis_result['_id']
+        current_document = self.db.bioinfo_samples.find_one({'_id': lims_id})
+        analysis_result = check_dates(analysis_result, current_document)
+
+        update_result = self.db.bioinfo_samples.update_one({'_id': lims_id},
+                                                  {'$set': analysis_result},
+                                                  upsert=True)
+
+        if not update_result.raw_result['updatedExisting']:
+            self.db.bioinfo_samples.update_one({'_id': lims_id},
+                                      {'$set': {
+                                          'added': dt.today()
+                                      }})
+            LOG.info("Added sample %s.", lims_id)
+        elif update_result.modified_count:
+            self.db.bioinfo_samples.update_one({'_id': lims_id},
+                                      {'$set': {
+                                          'updated': dt.today()
+                                      }})
+            LOG.info("Updated sample %s.", lims_id)
+        else:
+            LOG.info("No updates for sample %s.", lims_id)
+
     def sample(self, lims_id):
         return self.sample_collection.find_one({'_id': lims_id})
 
