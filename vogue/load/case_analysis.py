@@ -3,7 +3,7 @@ import logging
 LOG = logging.getLogger(__name__)
 
 
-def load_analysis(adapter, lims_id, analysis, processed=False, dry_run=False):
+def load_analysis(adapter, lims_id, analysis, processed=False, is_sample=False, dry_run=False):
     """Load information from a cancer analysis"""
 
     if dry_run:
@@ -17,7 +17,17 @@ def load_analysis(adapter, lims_id, analysis, processed=False, dry_run=False):
                  lims_id, analysis)
         return
     
-    if not processed:
+    if not processed and not is_sample:
         adapter.add_or_update_analysis_bioinfo_raw(analysis)
-    else:
+        load_status = True
+    elif processed and not is_sample:
         adapter.add_or_update_analysis_bioinfo_processed(analysis)
+        load_status = True
+    elif processed and is_sample:
+        adapter.add_or_update_analysis_bioinfo_samples(analysis)
+        load_status = True
+    else:
+        LOG.warning("No analysis was loaded into database")
+        load_status = False 
+
+    return load_status
