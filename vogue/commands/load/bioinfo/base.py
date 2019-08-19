@@ -24,6 +24,6 @@ def bioinfo():
     """Main entry point of load commands"""
     pass
 
-load.add_command(bioinfo_raw_command)
-load.add_command(bioinfo_process_command)
-load.add_command(bioinfo_sample_command)
+bioinfo.add_command(bioinfo_raw_command)
+bioinfo.add_command(bioinfo_process_command)
+bioinfo.add_command(bioinfo_sample_command)
