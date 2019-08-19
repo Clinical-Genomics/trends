@@ -4,7 +4,7 @@ LOG = logging.getLogger(__name__)
 
 
 def load_analysis(adapter, lims_id, analysis, processed=False, is_sample=False, dry_run=False):
-    """Load information from a cancer analysis"""
+    """Load information for a bioinfo analysis"""
 
     if dry_run:
         existing_analysis = adapter.sample(lims_id)
@@ -18,13 +18,13 @@ def load_analysis(adapter, lims_id, analysis, processed=False, is_sample=False, 
         return
     
     if not processed and not is_sample:
-        adapter.add_or_update_analysis_bioinfo_raw(analysis)
+        adapter.add_or_update_bioinfo_raw(analysis)
         load_status = True
     elif processed and not is_sample:
-        adapter.add_or_update_analysis_bioinfo_processed(analysis)
+        adapter.add_or_update_bioinfo_processed(analysis)
         load_status = True
     elif processed and is_sample:
-        adapter.add_or_update_analysis_bioinfo_samples(analysis)
+        adapter.add_or_update_bioinfo_samples(analysis)
         load_status = True
     else:
         LOG.warning("No analysis was loaded into database")

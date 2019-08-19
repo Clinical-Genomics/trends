@@ -138,7 +138,7 @@ class VougeAdapter(MongoAdapter):
             LOG.info("No updates for sample %s.", lims_id)
 
 
-    def add_or_update_analysis_bioinfo_raw(self, analysis_result: dict):
+    def add_or_update_bioinfo_raw(self, analysis_result: dict):
         """Functionality to add or update analysis for unprocessed aka raw bioinfo stat"""
         case_id = analysis_result['_id']
         # pop _id key to make pushing easier
@@ -168,7 +168,7 @@ class VougeAdapter(MongoAdapter):
                 upsert=True)
             LOG.info("Updated analysis for sample %s.", case_id)
 
-    def add_or_update_analysis_bioinfo_processed(self, analysis_result: dict):
+    def add_or_update_bioinfo_processed(self, analysis_result: dict):
         """Functionality to add or update analysis for processed bioinfo stat"""
         case_id = analysis_result['_id']
         # pop _id key to make pushing easier
@@ -198,8 +198,8 @@ class VougeAdapter(MongoAdapter):
                 upsert=True)
             LOG.info("Updated analysis for sample %s.", case_id)
 
-    def add_or_update_analysis_bioinfo_samples(self, analysis_result: dict):
-        """Functionality to add or update analysis for sample level results"""
+    def add_or_update_bioinfo_samples(self, analysis_result: dict):
+        """Functionality to add or update bioinfo analysis for sample level results"""
         print(analysis_result.keys())
         lims_id = analysis_result['_id']
         current_document = self.db.bioinfo_samples.find_one({'_id': lims_id})
