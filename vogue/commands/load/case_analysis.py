@@ -26,10 +26,10 @@ LOG = logging.getLogger(__name__)
 @click.option('--sample-list',
               help='Input list of comma separated sample names.')
 @click.option('-a',
-              '--analysis-config',
+              '--analysis-result',
               type=click.Path(),
               multiple=True,
-              help='Input config file. Accepted format: JSON, YAML')
+              help='Input file for bioinfo analysis results. Accepted format: JSON, YAML')
 @click.option(
     '-t',
     '--analysis-type',
@@ -44,6 +44,7 @@ LOG = logging.getLogger(__name__)
         It can be specified multiple times.''')
 @click.option('-w',
               '--analysis-workflow',
+              type=click.Choice(['mip','balsamic','microsalt'])
               required=True,
               help='Analysis workflow used.')
 @click.option('--workflow-version',
@@ -80,11 +81,11 @@ LOG = logging.getLogger(__name__)
     analysis model. Analysis types recognize the following keys in the input file: {" ".join(concat_dict_keys(analysis_model.ANALYSIS_SETS,key_name=""))}
         """)
 @with_appcontext
-def analysis(dry, analysis_config, analysis_type, analysis_case,
+def bioinfo(dry, analysis_result, analysis_type, analysis_case,
              analysis_workflow, workflow_version, processed,
              case_analysis_type, sample_list, cleanup, load_sample):
 
-    if not analysis_config and not processed:
+    if not analysis_result and not processed:
         LOG.error('Either --analysis-config or --processed should be provided')
         raise click.Abort()
 
@@ -105,8 +106,8 @@ def analysis(dry, analysis_config, analysis_type, analysis_case,
     # Loop over list of input config files for single sample and merge them into
     # one single dictionary
 
-    if not processed and analysis_config:
-        for input_config in analysis_config:
+    if not processed and analysis_result:
+        for input_config in analysis_result:
 
             LOG.info("Reading and validating config file: %s", input_config)
             try:
