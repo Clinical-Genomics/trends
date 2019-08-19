@@ -91,17 +91,6 @@ def bioinfo(dry, analysis_result, analysis_type, analysis_case,
 
     analysis_dict = dict()
 
-    if sample_list:
-        sample_id = sample_list.split(',')
-    else:
-        if 'sample' not in analysis_dict.keys():
-            LOG.error(
-                'sample key not found in input json. Use --sample-list instead'
-            )
-            raise click.Abort()
-        # store sample_id from dict to avoid losing it downstream cleanup
-        sample_id = analysis_dict['sample']
-
     #if is_case flag is enabled, build dictionary without merging.
     # Loop over list of input config files for single sample and merge them into
     # one single dictionary
@@ -141,7 +130,6 @@ def bioinfo(dry, analysis_result, analysis_type, analysis_case,
     analysis_dict['case'] = analysis_case
     analysis_dict['workflow'] = analysis_workflow
     analysis_dict['workflow_version'] = workflow_version
-    analysis_dict['sample'] = sample_id
     analysis_dict['case_analysis_type'] = case_analysis_type
 
     if processed:
@@ -160,6 +148,7 @@ def bioinfo(dry, analysis_result, analysis_type, analysis_case,
         analysis_dict[case_analysis_type] = current_analysis[
             analysis_workflow][case_analysis_type][-1]
 
+        analysis_dict['sample'] = current_analysis['samples']
         # if case analysis type is microsalt, aggregate samples under analysis result keys
         # e.g. {'smpl_1': {'key':'value_smpl1'}, 'smpl_2': {'key':'value_smpl2'}}
         # will be converted to {'key': {'smpl_1':'value_smpl1', 'smpl_2': 'value_smpl2'}}
@@ -183,6 +172,18 @@ def bioinfo(dry, analysis_result, analysis_type, analysis_case,
         current_analysis = current_app.adapter.bioinfo_processed(analysis_case)
 
     else:
+        if sample_list:
+            sample_id = sample_list.split(',')
+        else:
+            if 'sample' not in analysis_dict.keys():
+                LOG.error(
+                    'sample key not found in input json. Use --sample-list instead'
+                )
+                raise click.Abort()
+            # store sample_id from dict to avoid losing it downstream cleanup
+            sample_id = analysis_dict['sample']
+
+        analysis_dict['sample'] = sample_id
         # Don't process the case
         current_analysis = current_app.adapter.bioinfo_raw(analysis_case)
         processed = False
@@ -207,7 +208,7 @@ def bioinfo(dry, analysis_result, analysis_type, analysis_case,
     LOG.info('Case %s will be added/updated', analysis_case)
 
     load_analysis(adapter=current_app.adapter,
-                  lims_id=sample_id,
+                  lims_id=analysis_dict['sample'],
                   processed=processed,
                   is_sample=False,
                   dry_run=dry,
@@ -221,7 +222,7 @@ def bioinfo(dry, analysis_result, analysis_type, analysis_case,
             sample_analysis = build_bioinfo_sample(analysis_dict=current_processed_analysis,
                     process_case=processed, sample_id=sample)
             load_res = load_analysis(adapter=current_app.adapter,
-                          lims_id=sample_id,
+                          lims_id=sample,
                           processed=processed,
                           is_sample=True,
                           dry_run=dry,
