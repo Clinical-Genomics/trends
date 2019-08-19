@@ -23,13 +23,6 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
 @click.command("sample", short_help="Process stats and results from bioinfo process and load sample info in DB.")
-@click.option('--sample-list',
-              help='Input list of comma separated sample names.')
-@click.option('-a',
-              '--analysis-result',
-              type=click.Path(),
-              multiple=True,
-              help='Input file for bioinfo analysis results. Accepted format: JSON, YAML')
 @click.option(
     '-t',
     '--analysis-type',
@@ -51,22 +44,6 @@ LOG = logging.getLogger(__name__)
               required=True,
               help='Analysis workflow used.')
 @click.option(
-    '--processed/--not-processed',
-    is_flag=True,
-    help=
-    'Specify this flag if input json should be processed and to be added to bioinfo_processed.'
-)
-@click.option(
-    '--cleanup/--not-cleanup',
-    is_flag=True,
-    help=
-    'Specify this flag if input json should be cleanup based on analysis-type and models.'
-)
-@click.option('--load-sample/--not-load-sample',
-              is_flag=True,
-              default=True,
-              help='Specify this flag to load samples during loading processed')
-@click.option(
     '--case-analysis-type',
     type=click.Choice(['multiqc', 'microsalt', 'custom']),
     default='multiqc',
@@ -81,7 +58,24 @@ LOG = logging.getLogger(__name__)
     analysis model. Analysis types recognize the following keys in the input file: {" ".join(concat_dict_keys(analysis_model.ANALYSIS_SETS,key_name=""))}
         """)
 @with_appcontext
-def bioinfo_sample(dry, analysis_result, analysis_type, analysis_case,
-             analysis_workflow, workflow_version, processed,
-             case_analysis_type, sample_list, cleanup, load_sample):
-    pass
+def bioinfo_sample(dry, analysis_type, analysis_case,
+             analysis_workflow, workflow_version,
+             case_analysis_type):
+
+    current_processed_analysis = current_app.adapter.bioinfo_processed(analysis_case)
+    LOG.info("Loading following samples to bioinfo_samples: %s",
+             ", ".join(current_processed_analysis['samples']))
+
+    for sample in current_processed_analysis['samples']:
+        sample_analysis = build_bioinfo_sample(analysis_dict=current_processed_analysis,
+                process_case=True, sample_id=sample)
+        load_res = load_analysis(adapter=current_app.adapter,
+                      lims_id=sample,
+                      processed=True,
+                      is_sample=True,
+                      dry_run=dry,
+                      analysis=sample_analysis)
+        if load_res:
+            LOG.info("Sample %s is loaded into database", sample)
+        else:
+            LOG.warning("Loading failed for sample %s", sample)
