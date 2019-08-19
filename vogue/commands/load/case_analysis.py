@@ -22,7 +22,7 @@ import vogue.models.case_analysis as analysis_model
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
-@click.command("analysis", short_help="Read files from analysis workflows")
+@click.command("bioinfo", short_help="Read files from analysis workflows")
 @click.option('--sample-list',
               help='Input list of comma separated sample names.')
 @click.option('-a',
