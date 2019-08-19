@@ -15,6 +15,13 @@ def extract_valid_analysis(analysis_dict: dict, analysis_type: str,
     '''
     Extracts analysis dictionary based on input analysis_dict. This function will remove analysis json that are not part
     of the matching model. analysis_type is a single key matching ANALYSIS_SETS's first level keys.
+
+    Input:
+        analysis_dict: A dictionary of bioinfo analysis stats.
+        analysis_type: A string of analysis type. This is provided by user.
+        valid_analysis: A list of analysis to be extracted from analysis dict.
+    Output:
+        analysis: A dictionary of valid_analysis as keys extracted from analysis_dict
     '''
 
     case_analysis_type =  analysis_dict['case_analysis_type']
@@ -47,6 +54,15 @@ def build_processed_case(analysis_dict: dict,
                          cleanup=False):
     '''
     Builds an analysis dict from input information provided by user.
+
+    Input:
+        analysis_dict: A dictionary of bioinfo stats to be prepared for bioinfo_processed collection
+        analysis_type: A string for analysis_type to be extracted from from analysis_dict
+        valid_analysis: A list of valid analysis to found within analysis_dict
+        cleanup: Flag to cleanup unwanted keys from analysis_dict using info from valid_analysis and analysis_type
+    Output:
+        case_analysis: A dictionary with information about workflow and case_analysis_type(e.g. multiqc),
+            workflow version, and date added.
     '''
 
     case_analysis = copy.deepcopy(analysis_dict)
@@ -105,7 +121,7 @@ def build_unprocessed_case(analysis_dict: dict):
 def build_mongo_case(analysis_dict: dict, case_analysis: dict,
                      processed=False):
     '''
-    Build a mongo case docuemtn dictionary
+    Build a mongo case document dictionary
     '''
     analysis_case = analysis_dict['case']
     analysis_workflow = analysis_dict['workflow']
@@ -260,7 +276,7 @@ def build_analysis(analysis_dict: dict,
 
     return mongo_doc
 
-def build_analysis_sample(analysis_dict: dict,  sample_id: str,process_case=False):
+def build_bioinfo_sample(analysis_dict: dict,  sample_id: str,process_case=False):
     '''
     Builds sample analysis from analysis_dict
 

@@ -14,7 +14,7 @@ from vogue.tools.cli_utils import add_doc as doc
 from vogue.tools.cli_utils import recursive_default_dict
 from vogue.tools.cli_utils import convert_defaultdict_to_regular_dict
 from vogue.build.case_analysis import build_analysis
-from vogue.build.case_analysis import build_analysis_sample
+from vogue.build.case_analysis import build_bioinfo_sample
 from vogue.load.case_analysis import load_analysis
 from vogue.parse.load.case_analysis import validate_conf
 import vogue.models.case_analysis as analysis_model
@@ -217,7 +217,7 @@ def analysis(dry, analysis_config, analysis_type, analysis_case,
         LOG.info("Loading following samples to bioinfo_samples: %s",
                  ", ".join(analysis_dict['sample']))
         for sample in analysis_dict['sample']:
-            sample_analysis = build_analysis_sample(analysis_dict=current_processed_analysis,
+            sample_analysis = build_bioinfo_sample(analysis_dict=current_processed_analysis,
                     process_case=processed, sample_id=sample)
             load_res = load_analysis(adapter=current_app.adapter,
                           lims_id=sample_id,
