@@ -200,7 +200,6 @@ class VougeAdapter(MongoAdapter):
 
     def add_or_update_bioinfo_samples(self, analysis_result: dict):
         """Functionality to add or update bioinfo analysis for sample level results"""
-        print(analysis_result.keys())
         lims_id = analysis_result['_id']
         current_document = self.db.bioinfo_samples.find_one({'_id': lims_id})
         analysis_result = check_dates(analysis_result, current_document)
