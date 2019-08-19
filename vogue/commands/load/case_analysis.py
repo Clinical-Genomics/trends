@@ -44,7 +44,7 @@ LOG = logging.getLogger(__name__)
         It can be specified multiple times.''')
 @click.option('-w',
               '--analysis-workflow',
-              type=click.Choice(['mip','balsamic','microsalt'])
+              type=click.Choice(['mip','balsamic','microsalt']),
               required=True,
               help='Analysis workflow used.')
 @click.option('--workflow-version',
@@ -65,7 +65,7 @@ LOG = logging.getLogger(__name__)
 @click.option('--load-sample/--not-load-sample',
               is_flag=True,
               default=True,
-              help='Specify this flag if ')
+              help='Specify this flag to load samples during loading processed')
 @click.option(
     '--case-analysis-type',
     type=click.Choice(['multiqc', 'microsalt', 'custom']),
