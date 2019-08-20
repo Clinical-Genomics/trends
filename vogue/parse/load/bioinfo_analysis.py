@@ -1,7 +1,7 @@
 import logging
 import copy
 
-import vogue.models.case_analysis as analysis_model
+import vogue.models.bioinfo_analysis as analysis_model
 
 LOG = logging.getLogger(__name__)
 

@@ -3,7 +3,7 @@ import copy
 import collections
 
 from datetime import datetime as dt
-import vogue.models.case_analysis as analysis_model
+import vogue.models.bioinfo_analysis as analysis_model
 from vogue.tools.cli_utils import recursive_default_dict
 from vogue.tools.cli_utils import convert_defaultdict_to_regular_dict
 
