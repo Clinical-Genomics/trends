@@ -59,10 +59,9 @@ LOG = logging.getLogger(__name__)
 )
 @click.option('--dry', is_flag=True, help='Load from sample or not. (dry-run)')
 @doc(f"""
-    Read and load analysis results. These are either QC or analysis output files.
+    Load bioinfo analysis results from bioinfo_raw collection into bioinfo_processed 
 
-    The inputs are unique ID with an analysis config file (JSON/YAML) which includes analysis results matching the
-    analysis model. Analysis types recognize the following keys in the input file: {" ".join(concat_dict_keys(analysis_model.ANALYSIS_SETS,key_name=""))}
+    Analysis types recognize the following keys in the input file: {" ".join(concat_dict_keys(analysis_model.ANALYSIS_SETS,key_name=""))}
         """)
 @with_appcontext
 def bioinfo_process(dry, analysis_type, analysis_case, analysis_workflow,

@@ -1,9 +1,12 @@
+'''
+    Add or update bioinfo results to bioinfo raw collection
+'''
 import logging
 import copy
 import click
 
-from flask.cli import with_appcontext, current_app
-from flask import abort as flaskabort
+from flask.cli import with_appcontext
+from flask.cli import current_app
 
 from vogue.tools.cli_utils import json_read
 from vogue.tools.cli_utils import dict_replace_dot
@@ -11,26 +14,25 @@ from vogue.tools.cli_utils import yaml_read
 from vogue.tools.cli_utils import check_file
 from vogue.tools.cli_utils import concat_dict_keys
 from vogue.tools.cli_utils import add_doc as doc
-from vogue.tools.cli_utils import recursive_default_dict
-from vogue.tools.cli_utils import convert_defaultdict_to_regular_dict
 from vogue.build.bioinfo_analysis import build_analysis
-from vogue.build.bioinfo_analysis import build_bioinfo_sample
 from vogue.load.bioinfo_analysis import load_analysis
-from vogue.parse.load.bioinfo_analysis import inspect_analysis_result
 import vogue.models.bioinfo_analysis as analysis_model
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
+
 @click.command("raw", short_help="Read files from analysis workflows")
 @click.option('--sample-list',
               help='''Input list of comma separated sample names. Or specify it
 within input results file under "samples" key.''')
-@click.option('-a',
-              '--analysis-result',
-              type=click.Path(),
-              multiple=True,
-              help='Input file for bioinfo analysis results. Accepted format: JSON, YAML')
+@click.option(
+    '-a',
+    '--analysis-result',
+    type=click.Path(),
+    multiple=True,
+    help='Input file for bioinfo analysis results. Accepted format: JSON, YAML'
+)
 @click.option(
     '-t',
     '--analysis-type',
@@ -45,7 +47,7 @@ within input results file under "samples" key.''')
         It can be specified multiple times.''')
 @click.option('-w',
               '--analysis-workflow',
-              type=click.Choice(['mip','balsamic','microsalt']),
+              type=click.Choice(['mip', 'balsamic', 'microsalt']),
               required=True,
               help='Analysis workflow used.')
 @click.option('--workflow-version',
@@ -67,8 +69,8 @@ within input results file under "samples" key.''')
         """)
 @with_appcontext
 def bioinfo_raw(dry, analysis_result, analysis_type, analysis_case,
-             analysis_workflow, workflow_version,
-             case_analysis_type, sample_list):
+                analysis_workflow, workflow_version, case_analysis_type,
+                sample_list):
 
     analysis_dict = dict()
 
@@ -92,8 +94,7 @@ def bioinfo_raw(dry, analysis_result, analysis_type, analysis_case,
             tmp_analysis_dict = yaml_read(input_config)
             if not isinstance(tmp_analysis_dict, dict):
                 LOG.error(
-                    "Cannot read input analysis config file. Type unknown."
-                )
+                    "Cannot read input analysis config file. Type unknown.")
                 raise click.Abort()
 
         analysis_dict = {**analysis_dict, **tmp_analysis_dict}
@@ -138,7 +139,8 @@ def bioinfo_raw(dry, analysis_result, analysis_type, analysis_case,
     if ready_analysis:
         LOG.info('Values for %s  loaded for case %s',
                  list(ready_analysis.keys()), analysis_case)
-        LOG.info('Loaded samples in case are: %s', ", ".join(ready_analysis['samples']))
+        LOG.info('Loaded samples in case are: %s',
+                 ", ".join(ready_analysis['samples']))
 
     else:
         LOG.warning('No enteries were found for the given analysis type: %s',
