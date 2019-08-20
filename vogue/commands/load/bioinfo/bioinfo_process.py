@@ -23,13 +23,6 @@ LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
 @click.command("process", short_help="Process stats and result from bioinfo raw and load into DB.")
-@click.option('--sample-list',
-              help='Input list of comma separated sample names.')
-@click.option('-a',
-              '--analysis-result',
-              type=click.Path(),
-              multiple=True,
-              help='Input file for bioinfo analysis results. Accepted format: JSON, YAML')
 @click.option(
     '-t',
     '--analysis-type',
@@ -51,21 +44,11 @@ LOG = logging.getLogger(__name__)
               required=True,
               help='Analysis workflow used.')
 @click.option(
-    '--processed/--not-processed',
-    is_flag=True,
-    help=
-    'Specify this flag if input json should be processed and to be added to bioinfo_processed.'
-)
-@click.option(
     '--cleanup/--not-cleanup',
     is_flag=True,
     help=
     'Specify this flag if input json should be cleanup based on analysis-type and models.'
 )
-@click.option('--load-sample/--not-load-sample',
-              is_flag=True,
-              default=True,
-              help='Specify this flag to load samples during loading processed')
 @click.option(
     '--case-analysis-type',
     type=click.Choice(['multiqc', 'microsalt', 'custom']),
@@ -81,8 +64,81 @@ LOG = logging.getLogger(__name__)
     analysis model. Analysis types recognize the following keys in the input file: {" ".join(concat_dict_keys(analysis_model.ANALYSIS_SETS,key_name=""))}
         """)
 @with_appcontext
-def bioinfo_process(dry, analysis_result, analysis_type, analysis_case,
-             analysis_workflow, workflow_version, processed,
-             case_analysis_type, sample_list, cleanup, load_sample):
+def bioinfo_process(dry, analysis_type, analysis_case,
+             analysis_workflow, workflow_version,
+             case_analysis_type, cleanup):
 
-    pass
+    analysis_dict = dict()
+
+    #if is_case flag is enabled, build dictionary without merging.
+    # Loop over list of input config files for single sample and merge them into
+    # one single dictionary
+
+    valid_analysis = dict()
+    analysis_dict['case'] = analysis_case
+    analysis_dict['workflow'] = analysis_workflow
+    analysis_dict['workflow_version'] = workflow_version
+    analysis_dict['case_analysis_type'] = case_analysis_type
+
+    current_analysis = current_app.adapter.bioinfo_raw(analysis_case)
+
+    if current_analysis is None:
+        LOG.info(
+            "Raw import for this case does not exist. Load it without processed flag first"
+        )
+        raise click.Abort()
+    elif not case_analysis_type in current_analysis['case_analysis_types']:
+        LOG.info("%s doesn't exist for case %s", case_analysis_type,
+                 analysis_case)
+        raise click.Abort()
+
+    analysis_dict[case_analysis_type] = current_analysis[
+        analysis_workflow][case_analysis_type][-1]
+
+    analysis_dict['sample'] = current_analysis['samples']
+    # if case analysis type is microsalt, aggregate samples under analysis result keys
+    # e.g. {'smpl_1': {'key':'value_smpl1'}, 'smpl_2': {'key':'value_smpl2'}}
+    # will be converted to {'key': {'smpl_1':'value_smpl1', 'smpl_2': 'value_smpl2'}}
+    if case_analysis_type == "microsalt":
+        new_analysis_dict = recursive_default_dict()
+        for key in analysis_dict["microsalt"].keys():
+            if key in analysis_dict['sample']:
+                for next_key, next_value in analysis_dict["microsalt"][key].items():
+                    new_analysis_dict[next_key] = {**new_analysis_dict[next_key], **{key: next_value}}
+        analysis_dict.pop("microsalt")
+        tmp_dict = convert_defaultdict_to_regular_dict(new_analysis_dict)
+        analysis_dict["microsalt"] = copy.deepcopy(tmp_dict)
+
+    if cleanup:
+        LOG.info("Validating parsed config file(s).")
+        valid_analysis = validate_conf(analysis_dict)
+        if valid_analysis is None:
+            LOG.error("Invalid or badly formatted file(s).")
+            raise click.Abort()
+
+    current_analysis = current_app.adapter.bioinfo_processed(analysis_case)
+
+    # Don't process the case
+    ready_analysis = build_analysis(analysis_dict=analysis_dict,
+                                    analysis_type=analysis_type,
+                                    valid_analysis=valid_analysis,
+                                    current_analysis=current_analysis,
+                                    process_case=True,
+                                    cleanup=cleanup)
+
+    if ready_analysis:
+        LOG.info('Values for %s  loaded for case %s',
+                 list(ready_analysis.keys()), analysis_case)
+        LOG.info('Loaded samples in case are: %s', ", ".join(ready_analysis['samples']))
+
+    else:
+        LOG.warning('No enteries were found for the given analysis type: %s',
+                    analysis_type)
+    LOG.info('Case %s will be added/updated', analysis_case)
+
+    load_analysis(adapter=current_app.adapter,
+                  lims_id=analysis_dict['sample'],
+                  processed=True,
+                  is_sample=False,
+                  dry_run=dry,
+                  analysis=ready_analysis)
