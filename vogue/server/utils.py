@@ -249,6 +249,8 @@ def mip_picard_time_plot(adapter, year : int)-> dict:
             'as': 'sample_info'}
         }, {
         '$unwind': {'path': '$sample_info'}
+        },{
+        '$match': {'sample_info.received_date': {'$exists': 'True'}} 
         }, {
         '$project': {
             'mip': 1, 
@@ -322,10 +324,12 @@ def microsalt_get_strain_st(adapter,  year : int)-> dict:
         }, {
         '$unwind': {'path': '$sample_info'}
         }, {
+        '$match': {'sample_info.received_date': {'$exists': 'True'}} 
+        },{
         '$project': {
             'strain': '$sample_info.strain', 
             'year': {'$year': '$sample_info.received_date'}, 
-            'sequence_type': '$microsalt.results.blast_pubmlst.sequence_type'}
+            'sequence_type': '$microsalt.blast_pubmlst.sequence_type'}
         }, {
         '$match': {'year': {'$eq': int(year)}}
         }, {
@@ -375,11 +379,13 @@ def microsalt_get_qc_time(adapter,  year : int, metric_path : str)-> dict:
             'as': 'sample_info'}
         }, {
         '$unwind': {'path': '$sample_info'}
-        }, {
+        },{
+        '$match': {'sample_info.received_date': {'$exists': 'True'}} 
+        },{
         '$project': {
             'month': {'$month': '$sample_info.received_date'}, 
             'year': {'$year': '$sample_info.received_date'}, 
-            metric : '$microsalt.results.' + metric_path}
+            metric : '$microsalt.' + metric_path}
         }, {
         '$match': {'year': {'$eq': int(year)}}
         }, {
@@ -428,10 +434,12 @@ def microsalt_get_untyped(adapter,  year : int)-> dict:
         }, {
         '$unwind': {'path': '$sample_info'}
         }, {
+        '$match': {'sample_info.received_date': {'$exists': 'True'}} 
+        },{
         '$project': {
             'month': {'$month': '$sample_info.received_date'}, 
             'year': {'$year': '$sample_info.received_date'}, 
-            'ST': '$microsalt.results.blast_pubmlst.sequence_type'}
+            'ST': '$microsalt.blast_pubmlst.sequence_type'}
         }, {
         '$match': {'year': {'$eq': int(year)}}
         }, {
@@ -491,6 +499,8 @@ def microsalt_get_st_time(adapter,  year : int)-> dict:
             'path': '$sample_info'
         }
     }, {
+        '$match': {'sample_info.received_date': {'$exists': 'True'}} 
+    },{
         '$project': {
             'month': {
                 '$month': '$sample_info.received_date'
@@ -499,7 +509,7 @@ def microsalt_get_st_time(adapter,  year : int)-> dict:
             'year': {
                 '$year': '$sample_info.received_date'
             }, 
-            'sequence_type': '$microsalt.results.blast_pubmlst.sequence_type'
+            'sequence_type': '$microsalt.blast_pubmlst.sequence_type'
         }
     }, {
         '$match': {
