@@ -6,7 +6,7 @@ import vogue.models.case_analysis as analysis_model
 LOG = logging.getLogger(__name__)
 
 
-def validate_conf(analysis_dict: dict):
+def inspect_analysis_result(analysis_dict: dict):
     """
     Takes input analysis_dict dictionary and validates entries.
 
