@@ -24,7 +24,7 @@ def extract_valid_analysis(analysis_dict: dict, analysis_type: str,
         analysis: A dictionary of valid_analysis as keys extracted from analysis_dict
     '''
 
-    case_analysis_type =  analysis_dict['case_analysis_type']
+    case_analysis_type = analysis_dict['case_analysis_type']
 
     # Match valid_analysis with the analysis_type of ANALYSIS_SETS
     analysis_common_keys = list()
@@ -101,7 +101,6 @@ def build_processed_case(analysis_dict: dict,
     ##        case_analysis = extract_valid_analysis(analysis_dict=analysis_dict,
     ##                                               analysis_type=my_analysis,
     ##                                               valid_analysis=valid_analysis)
-
 
     return case_analysis
 
@@ -276,7 +275,10 @@ def build_analysis(analysis_dict: dict,
 
     return mongo_doc
 
-def build_bioinfo_sample(analysis_dict: dict,  sample_id: str,process_case=False):
+
+def build_bioinfo_sample(analysis_dict: dict,
+                         sample_id: str,
+                         process_case=False):
     '''
     Builds sample analysis from analysis_dict
 
