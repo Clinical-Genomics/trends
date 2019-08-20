@@ -23,7 +23,7 @@ LOG = logging.getLogger(__name__)
 
 @click.command(
     "process",
-    short_help="Process stats and result from bioinfo raw and load into DB.")
+    short_help='''Process stats and result from bioinfo raw and load into the bioinfo_processed collection. ''')
 @click.option(
     '-t',
     '--analysis-type',
@@ -33,7 +33,6 @@ LOG = logging.getLogger(__name__)
     help='Type of analysis results to load.')
 @click.option('-c',
               '--analysis-case',
-              required=True,
               help='''The case that this sample belongs.
         It can be specified multiple times.''')
 @click.option('-w',
@@ -57,6 +56,10 @@ LOG = logging.getLogger(__name__)
     help=
     'Specify the type for the case analysis. i.e. if it is multiqc output, then choose multiqc'
 )
+@click.option('-a',
+              '--load-all',
+              is_flag=True,
+              help='Load all samples for all cases within bioinfo_processed.')
 @click.option('--dry', is_flag=True, help='Load from sample or not. (dry-run)')
 @doc(f"""
     Load bioinfo analysis results from bioinfo_raw collection into bioinfo_processed 
@@ -65,8 +68,13 @@ LOG = logging.getLogger(__name__)
         """)
 @with_appcontext
 def bioinfo_process(dry, analysis_type, analysis_case, analysis_workflow,
-                    workflow_version, case_analysis_type, cleanup):
+                    workflow_version, case_analysis_type, cleanup, load_all):
 
+    if (not load_all and not analysis_case) or (load_all and analysis_case):
+        LOG.error(
+            '--load-all and --analysis-case are mutually exclusive and cannot be used together'
+        )
+        raise click.Abort()
     analysis_dict = dict()
 
     #if is_case flag is enabled, build dictionary without merging.

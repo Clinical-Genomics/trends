@@ -18,20 +18,29 @@ LOG = logging.getLogger(__name__)
 @click.command(
     "sample",
     short_help=
-    "Process stats and results from bioinfo process and load sample info in DB."
+    "Process stats and results from bioinfo process and load sample into the bioinfo_sample collection."
 )
 @click.option('-c',
               '--analysis-case',
-              required=True,
-              help='''The case that this sample belongs.
-        It can be specified multiple times.''')
+              help='The case to retrieve samples and load into bioinfo_sample.'
+              )
+@click.option('-a',
+              '--load-all',
+              is_flag=True,
+              help='Load all samples for all cases within bioinfo_processed.')
 @click.option('--dry', is_flag=True, help='Load from sample or not. (dry-run)')
 @doc(f"""
     Load samples analysis results from bioinfo processed collection
     into bioinfo sample collection.
     """)
 @with_appcontext
-def bioinfo_sample(dry, analysis_case):
+def bioinfo_sample(dry, analysis_case, load_all):
+
+    if (not load_all and not analysis_case) or (load_all and analysis_case):
+        LOG.error(
+            '--load-all and --analysis-case are mutually exclusive and cannot be used together'
+        )
+        raise click.Abort()
 
     current_processed_analysis = current_app.adapter.bioinfo_processed(
         analysis_case)
