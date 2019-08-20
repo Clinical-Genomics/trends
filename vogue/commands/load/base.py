@@ -10,7 +10,6 @@ LOG = logging.getLogger(__name__)
 
 # commands
 from vogue.commands.load.bioinfo import bioinfo as bioinfo_command 
-from vogue.commands.load.sample_analysis import sample_analysis as sample_analysis_command
 from vogue.commands.load.application_tag import application_tags as status_db_command
 from vogue.commands.load.flowcell import flowcell as flowcell_command
 from vogue.commands.load.sample import sample as sample_command
