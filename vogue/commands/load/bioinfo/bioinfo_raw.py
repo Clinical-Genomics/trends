@@ -13,11 +13,11 @@ from vogue.tools.cli_utils import concat_dict_keys
 from vogue.tools.cli_utils import add_doc as doc
 from vogue.tools.cli_utils import recursive_default_dict
 from vogue.tools.cli_utils import convert_defaultdict_to_regular_dict
-from vogue.build.case_analysis import build_analysis
-from vogue.build.case_analysis import build_bioinfo_sample
-from vogue.load.case_analysis import load_analysis
-from vogue.parse.load.case_analysis import validate_conf
-import vogue.models.case_analysis as analysis_model
+from vogue.build.bioinfo_analysis import build_analysis
+from vogue.build.bioinfo_analysis import build_bioinfo_sample
+from vogue.load.bioinfo_analysis import load_analysis
+from vogue.parse.load.bioinfo_analysis import inspect_analysis_result
+import vogue.models.bioinfo_analysis as analysis_model
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)

@@ -17,7 +17,7 @@ from vogue.build.bioinfo_analysis import build_analysis
 from vogue.build.bioinfo_analysis import build_bioinfo_sample
 from vogue.load.bioinfo_analysis import load_analysis
 from vogue.parse.load.bioinfo_analysis import inspect_analysis_result
-import vogue.models.case_analysis as analysis_model
+import vogue.models.bioinfo_analysis as analysis_model
 
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
