@@ -19,9 +19,13 @@ from vogue.tools.cli_utils import add_doc as doc
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
-cli = FlaskGroup(create_app=create_app)
+@click.group(cls=FlaskGroup, create_app=create_app)
+@click.version_option(version=__version__)
+def cli():
+    """ Main entry point """
+    pass 
 
-@click.group()
+@cli.command()
 def test():
     """Test server using CLI"""
     click.echo("test")
