@@ -19,9 +19,9 @@ from vogue.tools.cli_utils import add_doc as doc
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
-@click.group(cls=FlaskGroup, create_app=create_app)
-@click.version_option(version=__version__)
-def cli():
+@click.version_option(__version__)
+@click.group(cls=FlaskGroup, create_app=create_app, add_default_commands=True, invoke_without_command=False)
+def cli(**_):
     """ Main entry point """
     pass 
 
@@ -40,4 +40,4 @@ def name():
 
 cli.add_command(test)
 cli.add_command(load)
-test.add_command(name)
+cli.add_command(name)
