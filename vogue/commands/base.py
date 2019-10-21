@@ -19,11 +19,17 @@ from vogue.tools.cli_utils import add_doc as doc
 LOG_LEVELS = ['DEBUG', 'INFO', 'WARNING', 'ERROR', 'CRITICAL']
 LOG = logging.getLogger(__name__)
 
+
 @click.version_option(__version__)
-@click.group(cls=FlaskGroup, create_app=create_app, add_default_commands=True, invoke_without_command=False)
+@click.group(cls=FlaskGroup,
+             create_app=create_app,
+             add_default_commands=True,
+             invoke_without_command=False,
+             add_version_option=False)
 def cli(**_):
     """ Main entry point """
-    pass 
+    pass
+
 
 @cli.command()
 def test():
@@ -31,12 +37,14 @@ def test():
     click.echo("test")
     pass
 
+
 @cli.command()
 @with_appcontext
 def name():
     """Returns the app name, for testing purposes, mostly"""
     click.echo(current_app.name)
     return current_app.name
+
 
 cli.add_command(test)
 cli.add_command(load)
