@@ -178,6 +178,15 @@ def update_mongo_doc_case(mongo_doc: dict,
                           new_analysis: dict,
                           processed=False):
     '''
+    Args:
+        mongo_doc: an existing analysis retrieved from MongoDB 
+        analysis_dict: a dictionary parsed from CLI
+        new_analysis: new analysis dictionary to be loaded to MongoDB
+        processed: A Flag to indicate which type of data it is dealing with
+
+    Returns:
+        mongo_doc: an updated mongo_doc from Args
+
     Add or update mongo document for case data
     Adds or updates within processed or raw bioinfo collection
     '''
