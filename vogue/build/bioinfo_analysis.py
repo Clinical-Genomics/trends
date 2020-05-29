@@ -175,14 +175,12 @@ def build_mongo_case(analysis_dict: dict, case_analysis: dict,
 
 def update_mongo_doc_case(mongo_doc: dict,
                           analysis_dict: dict,
-                          new_analysis: dict,
-                          processed=False):
+                          new_analysis: dict):
     '''
     Args:
         mongo_doc: an existing analysis retrieved from MongoDB 
         analysis_dict: a dictionary parsed from CLI
         new_analysis: new analysis dictionary to be loaded to MongoDB
-        processed: A Flag to indicate which type of data it is dealing with
 
     Returns:
         mongo_doc: an updated mongo_doc from Args
@@ -267,8 +265,7 @@ def build_analysis(analysis_dict: dict,
 
         mongo_doc = update_mongo_doc_case(mongo_doc=mongo_doc,
                                           analysis_dict=analysis_dict,
-                                          new_analysis=analysis,
-                                          processed=process_case)
+                                          new_analysis=analysis)
 
     return mongo_doc
 
