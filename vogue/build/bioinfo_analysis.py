@@ -189,21 +189,12 @@ def update_mongo_doc_case(mongo_doc: dict,
     workflow_version = analysis_dict['workflow_version']
 
     if not processed:
-        if analysis_workflow in mongo_doc[
-                'workflows'] and case_analysis_type in mongo_doc[
-                    'case_analysis_types']:
-            # 1.a. case exists and workflow exists
-            mongo_doc[analysis_workflow][case_analysis_type].extend(
-                new_analysis[analysis_workflow][case_analysis_type])
-        elif analysis_workflow in mongo_doc[
-                'workflows'] and case_analysis_type not in mongo_doc[
-                    'case_analysis_types']:
-            # 1.b. case exists and workflow exists
+        # if workflow doesn't exist. e.g. previous workflow was mip, and now loading from balsamic
+        if analysis_workflow in mongo_doc['workflows'] :
             mongo_doc[analysis_workflow][case_analysis_type] = copy.deepcopy(
                 new_analysis[analysis_workflow][case_analysis_type])
-            mongo_doc['case_analysis_types'].append(case_analysis_type)
+            mongo_doc['case_analysis_types'] = case_analysis_type
         else:
-            # 1.c case exists but workflow doesn't
             mongo_doc['workflows'].append(analysis_workflow)
             mongo_doc[analysis_workflow] = new_analysis[analysis_workflow]
     else:
@@ -213,20 +204,16 @@ def update_mongo_doc_case(mongo_doc: dict,
                 **new_analysis[analysis_workflow]
             }
         else:
-            mongo_doc[analysis_workflow][case_analysis_type] = new_analysis[
-                analysis_workflow][case_analysis_type]
+            new_workflow_analysis = dict()
+            new_workflow_analysis[case_analysis_type] = new_analysis[analysis_workflow][case_analysis_type]
+            mongo_doc[analysis_workflow] = copy.deepcopy(new_workflow_analysis) 
+            mongo_doc['workflows'].append(analysis_workflow)
 
         if case_analysis_type not in mongo_doc['case_analysis_types']:
+            LOG.info("A new analysis type %s is added to the case %s", case_analysis_type,
+                     analysis_case)
             mongo_doc['case_analysis_types'].append(case_analysis_type)
 
-
-#        if case_analysis_type in mongo_doc['case_analysis_types']:
-#             # 1.a. case exists and workflow exists
-#             mongo_doc[case_analysis_type].extend(new_analysis[case_analysis_type])
-#        else:
-#            # 1.b. case exists and workflow exists
-#            mongo_doc[case_analysis_type] = copy.deepcopy(new_analysis[case_analysis_type])
-#            mongo_doc['case_analysis_types'].append(case_analysis_type)
 
     for sample in analysis_samples:
         if sample not in mongo_doc['samples']:
