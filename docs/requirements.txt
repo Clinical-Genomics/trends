@@ -1,0 +1,10 @@
+appdirs
+configargparse
+docutils==0.12
+recommonmark
+sphinx
+sphinx-argparse
+sphinx-click
+sphinx_rtd_theme
+sphinxcontrib-napoleon
+m2r
