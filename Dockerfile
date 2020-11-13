@@ -7,15 +7,20 @@ LABEL about.license="MIT License (MIT)"
 # Update apt-get and then cleanup
 RUN apt-get update && apt-get upgrade -y && rm -rf /var/lib/apt/lists/*
 
-# Run commands as non-root user
-RUN useradd --create-home --shell /bin/bash worker
-RUN chown worker:worker -R /home/worker
-USER worker
+# Copy all project files
+WORKDIR /home/vogue/vogue
+COPY . /home/vogue/vogue
 
-# Copy Vogue to /tmp to make it available to install
-WORKDIR /home/worker/vogue
-COPY . /home/worker/vogue
-RUN pip install --no-cache-dir -r /home/worker/vogue/requirements.txt -e .
+# Create a user named vogue and run as vogue
+RUN useradd --create-home --shell /bin/bash vogue
+RUN chown vogue:vogue -R /home/vogue
+USER vogue
+
+# Added pip install path
+ENV PATH="/home/vogue/.local/bin:${PATH}"
+
+# Install vogue
+RUN pip install --no-cache-dir -r /home/vogue/vogue/requirements.txt -e .
 
 ENTRYPOINT ["vogue"]
 CMD ["--help"]
