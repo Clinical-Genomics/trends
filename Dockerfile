@@ -20,7 +20,7 @@ USER vogue
 ENV PATH="/home/vogue/.local/bin:${PATH}"
 
 # Install vogue
-RUN pip install --no-cache-dir -r /home/vogue/vogue/requirements.txt -e .
+RUN cd /home/vogue/vogue && pip install --no-cache-dir -r requirements.txt
+RUN cd /home/vogue/vogue && pip install --no-cache-dir -e .
 
-ENTRYPOINT ["vogue"]
-CMD ["--help"]
+EXPOSE 5000
