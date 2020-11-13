@@ -2,6 +2,7 @@ FROM python:3.7-slim
 
 LABEL base_image="python:3.7-slim"
 LABEL about.home="https://github.com/Clinical-Genomics/vogue"
+LABEL about.documentation="https://vogue.readthedocs.io/"
 LABEL about.license="MIT License (MIT)"
 
 # Update apt-get and then cleanup
