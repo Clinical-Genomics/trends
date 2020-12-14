@@ -35,9 +35,8 @@ jobs:
           password: ${{ secrets.DOCKER_PASSWORD }}
       - name: Build only
         id: docker_build_test
-        push: false
         uses: docker/build-push-action@v2
-        file: ./Dockerfile
         with:
-          push: true
+          file: ./Dockerfile
+          push: false
           tags: clinicalgenomics/vogue:${{ steps.get_branch_name.outputs.branch }}
