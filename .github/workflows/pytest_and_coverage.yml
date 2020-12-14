@@ -26,7 +26,6 @@ jobs:
       # Install Vogue 
       - name: Install Vogue 
         id: install_vogue
-        shell: bash -l {0}
         run: |
           pip install --no-cache-dir -r requirements-dev.txt -r requirements.txt
           pip install -e .
@@ -34,7 +33,6 @@ jobs:
       # Run PyTest
       - name: Run PyTest
         id: pytest
-        shell: bash -l {0}
         run: |
           py.test --cov-report=xml --cov=BALSAMIC -rsxv tests/*
 
