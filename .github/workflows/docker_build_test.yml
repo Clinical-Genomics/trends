@@ -9,6 +9,11 @@ on:
       - develop
     tags-ignore:
       - "**"
+    path:
+      - 'Dockerfile'
+      - 'Dockerfile_jupyter'
+      - 'requirements.txt'
+      - 'requirements-jupyter.txt'
 
 jobs:
   main:

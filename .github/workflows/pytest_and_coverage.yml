@@ -14,18 +14,15 @@ jobs:
     steps:
       # Checkout Vogue 
       - name: Git checkout
-        id: git_checkout
         uses: actions/checkout@v2
 
-      # Get branch name
-      - name: Get branch name
-        id: get_branch_name
-        shell: bash
-        run: echo "##[set-output name=branch;]$(echo ${GITHUB_REF##*/})"
+      - name: Set up Python ${{ matrix.python-version }}
+        uses: actions/setup-python@v2
+        with:
+          python-version: ${{ matrix.python-version }}
 
       # Install Vogue 
       - name: Install Vogue 
-        id: install_vogue
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
@@ -34,7 +31,6 @@ jobs:
 
       # Run PyTest
       - name: Run PyTest
-        id: pytest
         run: |
           pytest --cov-report=xml --cov=vogue -rsxv tests/*
 
