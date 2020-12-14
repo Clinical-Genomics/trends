@@ -9,7 +9,7 @@ on:
       - develop
     tags-ignore:
       - "**"
-    path:
+    paths:
       - 'Dockerfile'
       - 'Dockerfile_jupyter'
       - 'requirements.txt'
