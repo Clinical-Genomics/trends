@@ -1,0 +1,7 @@
+pandas
+pprintpp
+ipywidgets
+cufflinks
+seaborn
+pyyaml
+pymongo
