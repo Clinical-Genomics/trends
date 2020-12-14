@@ -8,7 +8,7 @@ LABEL about.license="MIT License (MIT)"
 
 # Copy all project files
 WORKDIR $HOME
-COPY requirements.txt ./requirements.txt
+COPY requirements-jupyter.txt ./requirements.txt
 
 # Install vogue
 RUN pip install --no-cache-dir -r requirements.txt
