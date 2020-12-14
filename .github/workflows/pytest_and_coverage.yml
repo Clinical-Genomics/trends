@@ -27,7 +27,9 @@ jobs:
       - name: Install Vogue 
         id: install_vogue
         run: |
-          pip install --no-cache-dir -r requirements-dev.txt -r requirements.txt
+          python -m pip install --upgrade pip
+          pip install -r requirements.txt
+          pip install pytest
           pip install -e .
 
       # Run PyTest
