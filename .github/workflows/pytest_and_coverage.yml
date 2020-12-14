@@ -36,7 +36,7 @@ jobs:
       - name: Run PyTest
         id: pytest
         run: |
-          py.test --cov-report=xml --cov=vogue -rsxv tests/*
+          pytest --cov-report=xml --cov=vogue -rsxv tests/*
 
       # Run Codecov 
       - name: Upload coverage to Codecov
