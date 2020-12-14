@@ -142,5 +142,6 @@ def test_sample_dry_all(database, lims, caplog):
     result = runner.invoke(cli, ['load', 'sample', '-a', '--dry'])
 
     # THEN the program will log, and do nothig
+    print(caplog.text)
     assert "Will load all lims samples." in caplog.text
     assert app.adapter.sample_collection.estimated_document_count() == 0
