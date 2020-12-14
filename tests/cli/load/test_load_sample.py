@@ -1,3 +1,5 @@
+import logging
+
 from vogue.server import create_app
 from vogue.commands.base import cli
 from vogue.adapter.plugin import VougeAdapter
