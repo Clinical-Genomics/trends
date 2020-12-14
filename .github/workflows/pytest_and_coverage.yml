@@ -28,6 +28,9 @@ jobs:
           python -m pip install --upgrade pip
           pip install -r requirements.txt -r requirements-dev.txt 
           pip install -e .
+      # Pytest
+      - name: Run Pytest
+        run: |
           py.test --cov-report=xml --cov=vogue -rsxv tests/*
 
       # Run Codecov 
