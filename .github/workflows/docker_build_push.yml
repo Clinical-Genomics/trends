@@ -1,23 +1,17 @@
-name: build and test docker containers
+name: build and push docker containers
 
 # Tigger building and testing container 
-
 on:
   push:
-    branches-ignore:
+    branches:
       - master
       - develop
-    tags-ignore:
+    tags:
       - "**"
-    paths:
-      - 'Dockerfile'
-      - 'Dockerfile_jupyter'
-      - 'requirements.txt'
-      - 'requirements-jupyter.txt'
 
 jobs:
   main:
-    name: Docker image build test 
+    name: Docker image build push 
     runs-on: ubuntu-18.04
     strategy:
       fail-fast: true
@@ -41,12 +35,12 @@ jobs:
         uses: docker/build-push-action@v2
         with:
           file: ./Dockerfile
-          push: false
+          push: true
           tags: clinicalgenomics/vogue:${{ steps.get_branch_name.outputs.branch }}
       - name: Build Jupyter only 
         id: docker_build_test_jupyter
         uses: docker/build-push-action@v2
         with:
           file: ./Dockerfile_jupyter
-          push: false
+          push: true
           tags: clinicalgenomics/vogue:${{ steps.get_branch_name.outputs.branch }}-jupyter
