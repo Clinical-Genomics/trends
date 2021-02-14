@@ -437,7 +437,7 @@ def mip_dna_picard_time_plot(adapter, year: int) -> dict:
         }
     }, {
         '$project': {
-            'mip': 1,
+            'mip-dna': 1,
             'received_date': '$sample_info.received_date'
         }
     }, {
@@ -454,7 +454,7 @@ def mip_dna_picard_time_plot(adapter, year: int) -> dict:
             'year': {
                 '$year': '$received_date'
             },
-            'mip': 1
+            'mip-dna': 1
         }
     }, {
         '$match': {
@@ -471,7 +471,7 @@ def mip_dna_picard_time_plot(adapter, year: int) -> dict:
 
     for sample in aggregate_result:
         sample_id = sample['_id']
-        mip_dna_analysis = sample.get('mip')
+        mip_dna_analysis = sample.get('mip-dna')
         if mip_dna_analysis:
             multiqc_picard_insertSize = mip_dna_analysis.get(
                 'multiqc_picard_insertSize')
@@ -505,7 +505,7 @@ def mip_dna_picard_plot(adapter, year: int) -> dict:
 
     for sample in all_samples:
         sample_id = sample['_id']
-        mip_dna_analysis = sample.get('mip')
+        mip_dna_analysis = sample.get('mip-dna')
         if mip_dna_analysis:
             multiqc_picard_insertSize = mip_dna_analysis.get(
                 'multiqc_picard_insertSize')

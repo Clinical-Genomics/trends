@@ -55,7 +55,7 @@ class Mip_dna():
 
     def __init__(self, case):
         self.case = case
-        self.mip_dna_analysis = get_latest_analysis(case, 'mip')
+        self.mip_dna_analysis = get_latest_analysis(case, 'mip-dna')
         self.added = None
         self.report_saved_raw_data = {}
         self.multiqc_picard_insertSize = {}
