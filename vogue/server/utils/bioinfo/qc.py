@@ -3,7 +3,7 @@
 from vogue.constants.constants import MONTHS, MIP_DNA_PICARD
 
 
-def mip_dna_picard_time_plot(adapter, year: int) -> dict:
+def qc_dna_picard_time_plot(adapter, year: int) -> dict:
     """Prepares data for the MIP picard over time plot."""
 
     pipe = [{
@@ -25,7 +25,7 @@ def mip_dna_picard_time_plot(adapter, year: int) -> dict:
         }
     }, {
         '$project': {
-            'mip-dna': 1,
+            'balsamic': 1,
             'received_date': '$sample_info.received_date'
         }
     }, {
@@ -42,7 +42,7 @@ def mip_dna_picard_time_plot(adapter, year: int) -> dict:
             'year': {
                 '$year': '$received_date'
             },
-            'mip-dna': 1
+            'balsamic': 1
         }
     }, {
         '$match': {
@@ -59,13 +59,13 @@ def mip_dna_picard_time_plot(adapter, year: int) -> dict:
             final_data[key] = []
 
     for sample in aggregate_result:
-        mip_dna_analysis = sample.get('mip-dna')
-        if not mip_dna_analysis:
+        qc_dna_analysis = sample.get('balsamic')
+        if not qc_dna_analysis:
             continue
-        multiqc_picard_insertSize = mip_dna_analysis.get('multiqc_picard_insertSize')
-        multiqc_picard_HsMetrics = mip_dna_analysis.get('multiqc_picard_HsMetrics')
+        multiqc_picard_insertSize = qc_dna_analysis.get('multiqc_picard_insertSize')
+        multiqc_picard_HsMetrics = qc_dna_analysis.get('multiqc_picard_HsMetrics')
         final_data = _append_to_final_data(final_data=final_data, raw_data=multiqc_picard_insertSize, sample=sample)
-        final_data = _append_to_final_data(final_data=final_data, raw_data=multiqc_picard_HsMetrics, sample=sample)
+        #final_data = _append_to_final_data(final_data=final_data, raw_data=multiqc_picard_HsMetrics, sample=sample)
 
     plot_data = {'data': final_data, 'labels': [m[1] for m in MONTHS]}
     return (plot_data)
@@ -84,7 +84,7 @@ def _append_to_final_data(final_data: dict, raw_data: dict, sample: dict):
     return final_data
 
 
-def mip_dna_picard_plot(adapter, year: int) -> dict:
+def qc_dna_picard_plot(adapter, year: int) -> dict:
     """Prepares data for the MIP picard plot."""
 
     all_samples = adapter.bioinfo_samples_collection.find()
@@ -92,11 +92,11 @@ def mip_dna_picard_plot(adapter, year: int) -> dict:
 
     for sample in all_samples:
         sample_id = sample['_id']
-        mip_dna_analysis = sample.get('mip-dna')
-        if not mip_dna_analysis:
+        qc_dna_analysis = sample.get('balsamic')
+        if not qc_dna_analysis:
             continue
-        multiqc_picard_insertSize = mip_dna_analysis.get('multiqc_picard_insertSize')
-        multiqc_picard_HsMetrics = mip_dna_analysis.get('multiqc_picard_HsMetrics')
+        multiqc_picard_insertSize = qc_dna_analysis.get('multiqc_picard_insertSize')
+        multiqc_picard_HsMetrics = qc_dna_analysis.get('multiqc_picard_HsMetrics')
         merged = multiqc_picard_insertSize.copy()
         merged.update(multiqc_picard_HsMetrics)
         merged['_id'] = sample_id
