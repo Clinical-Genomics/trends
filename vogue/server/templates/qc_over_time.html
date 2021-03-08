@@ -15,9 +15,9 @@
                                 method="POST">
                                 <select name="picard_metric" class="form-control form-control-sm"
                                     placeholder=".form-control-sm" required onchange="this.form.submit()">
-                                    {% for group in MIP_DNA_PICARD %}
+                                    {% for group in DNA_PICARD %}
                                         <optgroup label="{{group}}" >
-                                        {% for metric in MIP_DNA_PICARD[group] %}
+                                        {% for metric in DNA_PICARD[group] %}
                                             <option value="{{group}} {{metric}}" {{ 'selected' if metric == selcted_metric }}>
                                                 {{ metric.lower().capitalize().replace('_', ' ')}}
                                             </option>
@@ -29,7 +29,7 @@
                         
                     </div>
                     <hr>
-                    A subset of the picard qc metricses that are being procued by MIP are visualized here. Write a request <a href="https://github.com/Clinical-Genomics/vogue/issues/new/choose">here</a>. if you want to add more data to this plot. <br>
+                    A subset of the picard qc metricses that are being procued by workflows are visualized here. Write a request <a href="https://github.com/Clinical-Genomics/vogue/issues/new/choose">here</a>. if you want to add more data to this plot. <br>
                     This plot shows <b>{{selected_group.lower().capitalize().replace('_', ' ')}}</b> over Time. {{help_urls[selected_group]['text']}}
                     Definitions of specific metrices auch as (<b>{{selcted_metric.lower().capitalize().replace('_', ' ')}}</b>) can be found <a href="{{help_urls[selected_group]['url']}}">here</a>. <br><br>
                     <div class="row">

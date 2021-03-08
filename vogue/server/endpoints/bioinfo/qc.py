@@ -2,7 +2,7 @@
 
 from flask import render_template, request, Blueprint, current_app
 
-from vogue.constants.constants import YEARS, BIOINFO_HELP_URLS, MIP_DNA_PICARD, MONTHS
+from vogue.constants.constants import YEARS, BIOINFO_HELP_URLS, DNA_PICARD, MONTHS
 from vogue.server.utils.bioinfo.qc import qc_dna_picard_plot, qc_dna_picard_time_plot
 from vogue import __version__
 
@@ -19,7 +19,7 @@ def qc_dna_picard_time(year: int):
                            selected_group=selected_group,
                            selcted_metric=selcted_metric,
                            qc_dna_results=qc_dna_results,
-                           MIP_DNA_PICARD=MIP_DNA_PICARD,
+                           DNA_PICARD=DNA_PICARD,
                            help_urls=BIOINFO_HELP_URLS,
                            months=[m[1] for m in MONTHS],
                            header="QC over time",
@@ -42,7 +42,7 @@ def qc_dna_picard(year: int):
                            X_axis=X_axis,
                            groups=list(set([Y_group, X_group])),
                            qc_dna_results=qc_dna_results,
-                           MIP_DNA_PICARD=MIP_DNA_PICARD,
+                           DNA_PICARD=DNA_PICARD,
                            help_urls=BIOINFO_HELP_URLS,
                            header='QC plots',
                            endpoint=request.endpoint,
