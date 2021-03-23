@@ -89,7 +89,7 @@ def _append_to_final_data(final_data: dict, raw_data: dict, sample: dict):
         if key in final_data.keys():
             final_data[key].append({
                 'name': sample['_id'],
-                'category': sample['category'],
+                'application': sample['category'],
                 'x': sample['month'],
                 'y': val
             })
