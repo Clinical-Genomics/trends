@@ -114,7 +114,9 @@ def qc_dna_picard_plot(adapter, year: int) -> dict:
         sample_id = sample['_id']
         qc_dna_analysis = sample.get('balsamic')
         if not qc_dna_analysis:
-            continue
+            qc_dna_analysis = sample.get('mip-dna')
+            if not qc_dna_analysis:
+                continue
         multiqc_picard_insertSize = qc_dna_analysis.get(
             'multiqc_picard_insertSize')
         multiqc_picard_HsMetrics = qc_dna_analysis.get(
