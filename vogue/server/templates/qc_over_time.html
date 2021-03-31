@@ -57,7 +57,7 @@
               'name': {{result.name | tojson}},
               'x': {{result.x-1}},
               'y': {{result.y}},
-              'color': {% if result.application in ['wes', 'tgs'] %} '#970118' {% else %} '#73acd8' {% endif %}
+              'color': {% if result.application == 'wes' %} '#970118' {% elif result.application == 'tgs' %} '#c2b412' {% else %} '#73acd8' {% endif %}
             } )
         {% endfor %}
     {% endif %}
@@ -102,7 +102,7 @@
               radius: 3,
               fillColor:data.color
             },
-        legend: { enabled: true },
+        legend: { enabled: false },
         }] 
 });
 

@@ -78,6 +78,14 @@ def qc_dna_picard_time_plot(adapter, year: int) -> dict:
                 raw_data=qc_data_to_process,
                 sample=sample)
 
+        qc_data_to_process = qc_dna_analysis.get('multiqc_picard_HsMetrics')
+        if qc_data_to_process:
+            final_data = _append_to_final_data(
+                final_data=final_data,
+                raw_data=qc_data_to_process,
+                sample=sample)
+
+
     plot_data = {'data': final_data, 'labels': [m[1] for m in MONTHS]}
     return (plot_data)
 
