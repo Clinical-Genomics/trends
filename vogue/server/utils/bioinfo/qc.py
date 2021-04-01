@@ -63,7 +63,7 @@ def qc_dna_picard_time_plot(adapter, year: int) -> dict:
     final_data = {}
     for data in DNA_PICARD.values():
         for key in data:
-            final_data[key] = []
+            final_data[key] = {}
 
     for sample in aggregate_result:
         qc_dna_analysis = sample.get('balsamic')
@@ -95,7 +95,10 @@ def _append_to_final_data(final_data: dict, raw_data: dict, sample: dict):
 
     for key, val in raw_data.items():
         if key in final_data.keys():
-            final_data[key].append({
+            category = sample['category']
+            if category not in final_data[key].keys():
+                final_data[key][category] = []
+            final_data[key][category].append({
                 'name': sample['_id'],
                 'application': sample['category'],
                 'x': sample['month'],
