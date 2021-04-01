@@ -32,7 +32,7 @@ def qc_dna_picard_time(year: int):
 @qc_blueprint.route('/Bioinfo/picard/<year>',
                      methods=['GET', 'POST'])
 def qc_dna_picard(year: int):
-    qc_dna_results = qc_dna_picard_plot(app.adapter, year)
+    qc_dna_results: List[dict] = qc_dna_picard_plot(app.adapter, year)
     Y_group, Y_axis = request.form.get(
         'Y_axis', 'PICARD_INSERT_SIZE MEAN_INSERT_SIZE').split()
     X_group, X_axis = request.form.get(
